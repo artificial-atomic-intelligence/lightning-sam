@@ -97,26 +97,27 @@ def train_sam(
                 loss_dice += dice_loss(pred_mask, gt_mask, num_masks)
                 loss_iou += F.mse_loss(iou_prediction, batch_iou, reduction='sum') / num_masks
 
-            loss_total = 20. * loss_focal + loss_dice + loss_iou
-            optimizer.zero_grad()
-            fabric.backward(loss_total)
-            optimizer.step()
-            scheduler.step()
-            batch_time.update(time.time() - end)
-            end = time.time()
+            if iter % cfg.grad_update == 0:
+                loss_total = 20. * loss_focal + loss_dice + loss_iou
+                optimizer.zero_grad()
+                fabric.backward(loss_total)
+                optimizer.step()
+                scheduler.step()
+                batch_time.update(time.time() - end)
+                end = time.time()
 
-            focal_losses.update(loss_focal.item(), batch_size)
-            dice_losses.update(loss_dice.item(), batch_size)
-            iou_losses.update(loss_iou.item(), batch_size)
-            total_losses.update(loss_total.item(), batch_size)
+                focal_losses.update(loss_focal.item(), batch_size)
+                dice_losses.update(loss_dice.item(), batch_size)
+                iou_losses.update(loss_iou.item(), batch_size)
+                total_losses.update(loss_total.item(), batch_size)
 
-            fabric.print(f'Epoch: [{epoch}][{iter+1}/{len(train_dataloader)}]'
-                         f' | Time [{batch_time.val:.3f}s ({batch_time.avg:.3f}s)]'
-                         f' | Data [{data_time.val:.3f}s ({data_time.avg:.3f}s)]'
-                         f' | Focal Loss [{focal_losses.val:.4f} ({focal_losses.avg:.4f})]'
-                         f' | Dice Loss [{dice_losses.val:.4f} ({dice_losses.avg:.4f})]'
-                         f' | IoU Loss [{iou_losses.val:.4f} ({iou_losses.avg:.4f})]'
-                         f' | Total Loss [{total_losses.val:.4f} ({total_losses.avg:.4f})]')
+                fabric.print(f'Epoch: [{epoch}][{iter+1}/{len(train_dataloader)}]'
+                            f' | Time [{batch_time.val:.3f}s ({batch_time.avg:.3f}s)]'
+                            f' | Data [{data_time.val:.3f}s ({data_time.avg:.3f}s)]'
+                            f' | Focal Loss [{focal_losses.val:.4f} ({focal_losses.avg:.4f})]'
+                            f' | Dice Loss [{dice_losses.val:.4f} ({dice_losses.avg:.4f})]'
+                            f' | IoU Loss [{iou_losses.val:.4f} ({iou_losses.avg:.4f})]'
+                            f' | Total Loss [{total_losses.val:.4f} ({total_losses.avg:.4f})]')
 
 
 def configure_opt(cfg: Box, model: Model):

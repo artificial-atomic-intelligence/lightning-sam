@@ -15,6 +15,7 @@ except KeyError as err:
 config = {
     "num_devices": 4,
     "batch_size": 12,
+    "grad_update": 1,
     "num_workers": 4,
     "num_epochs": 20,
     "eval_interval": 2,
