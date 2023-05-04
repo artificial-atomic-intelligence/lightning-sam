@@ -13,11 +13,11 @@ except KeyError as err:
     raise ValueError(f"Set {err} environment variable with absolute path")
 
 config = {
-    "num_devices": 4,
-    "batch_size": 12,
-    "grad_update": 1,
+    "num_devices": 1,
+    "batch_size": 1,
+    "grad_update": 12,
     "num_workers": 4,
-    "num_epochs": 20,
+    "num_epochs": 100,
     "eval_interval": 2,
     "out_dir": "out/training",
     "opt": {
