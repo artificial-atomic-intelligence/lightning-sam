@@ -8,7 +8,7 @@ config = {
     "eval_interval": 2,
     "out_dir": "out/training",
     "opt": {
-        "learning_rate": 8e-4,
+        "learning_rate": 1e-4,
         "weight_decay": 1e-4,
         "decay_factor": 10,
         "steps": [60000, 86666],
