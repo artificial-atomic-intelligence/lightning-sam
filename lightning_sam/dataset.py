@@ -47,7 +47,7 @@ class COCODataset(Dataset):
 
         bboxes = np.stack(bboxes, axis=0)
         masks = np.stack(masks, axis=0)
-        return image, torch.tensor(bboxes), torch.tensor(masks).float()
+        return image, torch.tensor(bboxes, dtype=torch.float32), torch.tensor(masks, dtype=torch.float32)
 
 
 def collate_fn(batch):
