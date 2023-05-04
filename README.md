@@ -52,15 +52,23 @@ pip install .
 
 1. Prepare your custom COCO-format dataset. The dataset should include a JSON file with annotations and an images folder with corresponding images.
 
-1. Edit src/config.py with your dataset paths.
+2. Edit src/config.py with run settings, and your absolute dataset and model checkpoint paths, OR use environment variables:
+- `SAM_TRAINING_DIR`
+- `SAM_VALID_DIR`
+- `SAM_TRAINING_COCO`
+- `SAM_VALID_COCO`
+- `SAM_CHECKPOINT`
 
-1. Run src/train.py.
+3. Run src/train.py.
 
 ## Notes
 
 - Uses the original implementation of SAM.
 - Loss calculated as stated on the paper (20 * focal loss + dice loss + mse loss).
 - Only supports bounding box input prompts.
+- ADS additions:
+    - `grad_update` parameter added to config. This defines how many batches need to pass through the model (and contribute to the running loss) before weights are updated.
+    - Weights and biases logging integration added.
 
 ## Resources
 
