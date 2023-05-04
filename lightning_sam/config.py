@@ -7,6 +7,8 @@ try:
 
     valid_dir = os.environ["SAM_VALID_DIR"]
     valid_coco = os.environ["SAM_VALID_COCO"]
+
+    sam_chkpt = os.environ["SAM_CHECKPOINT"]
 except KeyError as err:
     raise ValueError(f"Set {err} environment variable with absolute path")
 
@@ -26,7 +28,7 @@ config = {
     },
     "model": {
         "type": 'vit_h',
-        "checkpoint": "sam_vit_h_4b8939.pth",
+        "checkpoint": sam_chkpt,
         "freeze": {
             "image_encoder": True,
             "prompt_encoder": True,
