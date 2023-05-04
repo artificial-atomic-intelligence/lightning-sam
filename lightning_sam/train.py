@@ -17,6 +17,8 @@ from torch.utils.data import DataLoader
 from utils import AverageMeter
 from utils import calc_iou
 
+import wandb
+
 torch.set_float32_matmul_precision('high')
 
 def validate(fabric: L.Fabric, model: Model, val_dataloader: DataLoader, epoch: int = 0):
@@ -45,6 +47,8 @@ def validate(fabric: L.Fabric, model: Model, val_dataloader: DataLoader, epoch: 
             )
 
     fabric.print(f'Validation [{epoch}]: Mean IoU: [{ious.avg:.4f}] -- Mean F1: [{f1_scores.avg:.4f}]')
+    
+    wandb.log({"epoch": epoch, "avg_val_iou": ious.avg})
 
     fabric.print(f"Saving checkpoint to {cfg.out_dir}")
     state_dict = model.model.state_dict()
@@ -117,6 +121,8 @@ def train_sam(
                             f' | Dice Loss [{dice_losses.val:.4f} ({dice_losses.avg:.4f})]'
                             f' | IoU Loss [{iou_losses.val:.4f} ({iou_losses.avg:.4f})]'
                             f' | Total Loss [{total_losses.val:.4f} ({total_losses.avg:.4f})]')
+        
+        wandb.log({"epoch": epoch, "avg_total_loss": total_losses.avg})
 
 
 def configure_opt(cfg: Box, model: Model):
@@ -139,7 +145,7 @@ def configure_opt(cfg: Box, model: Model):
 
 def main(cfg: Box) -> None:
 
-    wandb_logger = WandbLogger(project="sam-tuning")
+    wandb_logger = WandbLogger(log_model=False, project="sam-tuning", config=cfg)
 
     fabric = L.Fabric(accelerator="auto",
                       devices=cfg.num_devices,
@@ -154,6 +160,8 @@ def main(cfg: Box) -> None:
     with fabric.device:
         model = Model(cfg)
         model.setup()
+
+    wandb_logger.watch(model)
 
     train_data, val_data = load_datasets(cfg, model.model.image_encoder.img_size)
     train_data = fabric._setup_dataloader(train_data)
