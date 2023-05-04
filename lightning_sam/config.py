@@ -1,4 +1,14 @@
 from box import Box
+import os
+
+try:
+    training_dir = os.environ["SAM_TRAINING_DIR"]
+    training_coco = os.environ["SAM_TRAINING_COCO"]
+
+    valid_dir = os.environ["SAM_VALID_DIR"]
+    valid_coco = os.environ["SAM_VALID_COCO"]
+except KeyError as err:
+    raise ValueError(f"Set {err} environment variable with absolute path")
 
 config = {
     "num_devices": 4,
@@ -25,12 +35,12 @@ config = {
     },
     "dataset": {
         "train": {
-            "root_dir": "/coco/coco2017/train2017",
-            "annotation_file": "/coco/coco2017/annotations/instances_train2017.json"
+            "root_dir": training_dir,
+            "annotation_file": training_coco
         },
         "val": {
-            "root_dir": "/coco/coco2017/val2017",
-            "annotation_file": "/coco/coco2017/annotations/instances_val2017.json"
+            "root_dir": valid_dir,
+            "annotation_file": valid_coco
         }
     }
 }
