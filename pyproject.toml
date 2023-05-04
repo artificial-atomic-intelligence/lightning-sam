@@ -14,6 +14,7 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
+wandb = "^0.15.1"
 python = "^3.8, <3.11"
 python-box = "^7.0.1"
 pycocotools = "^2.0.6"
