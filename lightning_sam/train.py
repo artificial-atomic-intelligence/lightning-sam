@@ -9,7 +9,7 @@ from box import Box
 from config import cfg
 from dataset import load_datasets
 from lightning.fabric.fabric import _FabricOptimizer
-from lightning.fabric.loggers import TensorBoardLogger
+from lightning.pytorch.loggers.wandb import WandbLogger
 from losses import DiceLoss
 from losses import FocalLoss
 from model import Model
@@ -18,7 +18,6 @@ from utils import AverageMeter
 from utils import calc_iou
 
 torch.set_float32_matmul_precision('high')
-
 
 def validate(fabric: L.Fabric, model: Model, val_dataloader: DataLoader, epoch: int = 0):
     model.eval()
@@ -139,10 +138,13 @@ def configure_opt(cfg: Box, model: Model):
 
 
 def main(cfg: Box) -> None:
+
+    wandb_logger = WandbLogger(project="sam-tuning")
+
     fabric = L.Fabric(accelerator="auto",
                       devices=cfg.num_devices,
                       strategy="auto",
-                      loggers=[TensorBoardLogger(cfg.out_dir, name="lightning-sam")])
+                      loggers=[wandb_logger])
     fabric.launch()
     fabric.seed_everything(1337 + fabric.global_rank)
 
